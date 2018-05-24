@@ -1,22 +1,48 @@
 module f1_parameters
 implicit none
-!integer :: Nvar,Nstates,Natoms,overcrowd
-!real :: spacing1,spacing2,spacing3,scaling1,scaling2,scaling3,max_var1,max_var2,max_var3
-!character(50) :: path1, path2
-!character(20) :: file1
 
-!Path to the files
+
+!PATHS
+!Path to the trajectories
 character(50),parameter :: path1 = "/home/ruisun/proj/ruisun/B0/"
-character(50),parameter :: path2 = "/home/kazuumi/lus/B0/"
-character(50),parameter :: path3 = "/home/kazuumi/lus/B0/grid/"
+!Path to the f90s and bash scripts
+character(50),parameter :: path2 = "/home/kazuumi/lus/B0/branch1/GradientGrider/"
+!Path to the grid
+character(50),parameter :: path3 = "/home/kazuumi/lus/B0/branch1/grid/"
+!Path for the following files (see below)
+character(50),parameter :: path4 = "/home/kazuumi/lus/B0/branch1/"
 
+
+
+!FILES
 !File that will keep the trajectory folder names
-character(20),parameter :: file1 = "f1_trajectories.txt"
+character(20),parameter :: trajectories = "f1_trajectories.txt" !Used to be file1
+!File that writes the progress of the program
+character(20),parameter :: progressfile = "f1_progress.txt" !Used to not exist
+!File to write to for system calls
+character(20),parameter :: temporaryfile = "tmp.txt"
 
-!Some parameters, Nlength is the initial guess for how many states per grid; this can
-!grow later
+
+
+!If we need to create a grid from the trajectories in path1, then set this true
+logical :: start_from_scratch = .true.
+
+
+
+!FORMATS
+character(13),parameter :: FMT1 = "(3(1x,F11.6))"           !For three variables
+character(14),parameter :: FMT2 = "(36(1x,F11.6))"          !For six atoms, full state
+character(14),parameter :: FMT3 = "(18(1x,F11.6))"          !For six atoms, coords
+character(4),parameter :: FMT4 = "(I4)"                     !For subcell names
+
+
+
+!VARIABLES
+
+!The number of atoms in the system
 integer,parameter :: Natoms = 6
-!integer,parameter :: Nlength = 10000
+
+!The number of variables in use
 integer,parameter :: Nvar = 3
 
 !The spacing is the dimension of the gridlines; currently var3 is not grided
@@ -35,7 +61,6 @@ integer,parameter :: scaling2 = 10
 integer,parameter :: scaling3 = 10
 
 !There are some outliers; making a maximum throws these away
-!Unit in Angstroms? 
 real,parameter :: max_var1 = 80.0
 real,parameter :: max_var2 = 80.0
 

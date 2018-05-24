@@ -10,17 +10,24 @@ real :: var1,var2,var3
 integer :: var1_int, var2_int, var3_int
 real :: t1,t2
 real,allocatable :: coords(:),vals(:)
-character(50) :: line_data
-character(20) :: file2,file3,some_folder,descriptor1,descriptor2
+character(50) :: current_path,line_data
+character(20) :: subcell,some_folder,descriptor1,descriptor2
 
-! I am not sure what this does... Could you explain this to me?
-file3 = "progress.txt"
-inquire(file=trim(path2)//trim(file3),exist=flag1)
-if (flag1) call system("rm "//trim(path2)//trim(file3))
-open(70,file=trim(path2)//trim(file3),status="new")
+
+!Instead of printing to the terminal, we print to the progressfile
+!First we check if it already exists and just wipe it
+!We want to start from a clean slate
+inquire(file=trim(path4)//trim(progressfile),exist=flag1)
+if (flag1) call system("rm "//trim(path4)//trim(progressfile))
+open(70,file=trim(path4)//trim(progressfile),status="new")
+write(70,FMT="(A50)") "Let's start"
+write(70,FMT="(A50)") ""
 close(70)
-call system("ls -p " // trim(path1) // " | grep '[0123456789]/' > " // file1)
-open(70,file=trim(file1),action="read")
+
+!All trajectory folders are formatted as a number
+!So search for these numbered folders and read them
+call system("ls -p "//trim(path1)//" | grep '[0123456789]/' > "//trim(path4)//trajectories)
+open(70,file=trim(path4)//trim(trajectories),action="read")
 
 !coords  ---  this array keeps the coordinates and gradients of a state
 !vals    ---  this array keeps var1, var2, var3 of a state
@@ -34,123 +41,118 @@ Ntraj = 0
 Nstates = 0
 do
 
- exit    !Comment this out later
+        if (.not. (start_from_scratch)) exit
 
         !Fetch the name of one folder (a trajectory)
+        !Format its contents with sed into tmp.txt
         read(70,FMT="(A20)",iostat=state1) some_folder
         if (state1 /= 0) exit
-open(80,file=trim(path2)//trim(file3),position="append")
+        call system(trim(path2)//"trajectory_sed.sh "//trim(path1)//&
+                trim(some_folder)//"kkk.out "//trim(path4)//trim(temporaryfile))
+        Ntraj = Ntraj+1
+
+
+
+!To track the progress, open up 80
+open(80,file=trim(path4)//trim(progressfile),position="append")
+write(80,*) trim(path2)//"trajectory_sed.sh "//trim(path1)//&
+            trim(some_folder)//"kkk.out "//trim(path4)//trim(temporaryfile)
 write(80,*) "Now accessing folder:", some_folder
 close(80)
-        Ntraj = Ntraj+1
+
+
         
-        !Open the file in the folder which has the trajectories (the fort.8
-        !file)
-        open(71,file=trim(path1)//trim(some_folder)//"kkk.out")
+        !Open the now-formatted trajectory, discard the first line
+        open(71,file=trim(path4)//trim(temporaryfile))
+        read(71,FMT="(A50)", iostat=state2) line_data
+        line_num = 1
 
-! generally, you don't want too many layers of if in a code
-! I think fortran line processing is much slower than bash
-! please check and make sure
-! if so, we should write a bash script to preprocess the data
-        !flag2 indicates when coordinates and gradients are NOT on the next line
-        !All following lines will be in a pattern that can be read
-        flag2 = .true.
         do
-                if (flag2) then
-                        !If the line contains "     x         y    ", this
-                        !indicates a state coming up
+                if (line_num == skips) then
+
                         read(71,FMT="(A50)", iostat=state2) line_data
-                        if ((flag2).and.(index(line_data,"x          y")/= 0)) then
-                                flag2 = .false.
-                                Nstates = Nstates + 1
-                                line_num = 0
-                        end if
-                else
-                        !We only have a fully-described state when all atoms
-                        !have their coordinate and gradient written
-                        line_num = line_num + 1
-                        if (line_num == skips) then
-                                !With the fully described state, calculate the
-                                !variables wanted
-! please refer to my comments in the parameters/variables file
-                                call getVar1(coords(1:3*Natoms),Natoms,var1)
-                                call getVar2(coords(1:3*Natoms),Natoms,var2)
-                                call getVar3(coords(1:3*Natoms),Natoms,var3)
+                        if (state2 /= 0) exit
+                        line_num = 1
 
-                                !If they are outliers, just skip this cycle
-                                if ((var1 > max_var1).or.(var2 > max_var2)) then
-                                        Nstates = Nstates - 1
-                                        flag2 = .true.
-                                        cycle
-                                end if
+                        !With the fully described state, calculate the
+                        !variables wanted
+                        call getVar1(coords(1:3*Natoms),Natoms,var1)
+                        call getVar2(coords(1:3*Natoms),Natoms,var2)
+                        call getVar3(coords(1:3*Natoms),Natoms,var3)
 
-                                vals(1) = var1
-                                vals(2) = var2
-                                vals(3) = var3
-
-! shouldn't this be divided by 'spacing'??
-                                !Find which appropriate cell the state is in
-                                var1_int = floor(var1*spacing1)
-                                var2_int = floor(var2*spacing2)
-                                var3_int = floor(var3*spacing3)
-
-                                !Make the filename for the cell
-                                write(descriptor1,FMT="(I4)") var1_int
-                                write(descriptor2,FMT="(I4)") var2_int
-                                file2 = trim(adjustl(descriptor1))//"_"//trim(adjustl(descriptor2))//".dat"
-                                inquire(file=trim(path3)//trim(file2),exist=flag1)
-
-                                !Write to the file the variables, coordinates,
-! give the FMT a number and staying outside the loop
-                                !and gradients
-                                if (flag1) then
-                                        open(72,file=trim(path3)//trim(file2),position="append")
-                                        write(72,FMT="(3(1x,F11.6))",advance="no") (vals(i),i=1,Nvar)
-                                        write(72,FMT="(36(1x,F11.6))")(coords(i),i=1,6*Natoms)
-                                        close(72)
-                                else
-                                        open(72,file=trim(path3)//trim(file2),position="append",status="new")
-                                        write(72,FMT="(3(1x,F11.6))",advance="no") (vals(i),i=1,Nvar)
-                                        write(72,FMT="(36(1x,F11.6))")(coords(i),i=1,6*Natoms)
-                                        close(72)
-                                end if
-
-                                flag2 = .true.
-! cycle can make things hard to follow, try to avoid that
+                        !If they are outliers, just skip this cycle
+                        if ((var1 > max_var1).or.(var2 > max_var2)) then
+                                Nstates = Nstates - 1
                                 cycle
                         end if
 
+                        vals(1) = var1
+                        vals(2) = var2
+                        vals(3) = var3
+
+                        !Find which appropriate cell the state is in
+                        var1_int = floor(var1/spacing1)
+                        var2_int = floor(var2/spacing2)
+                        var3_int = floor(var3/spacing3)
+
+                        !Make the filename for the cell
+                        write(descriptor1,FMT=FMT4) var1_int
+                        write(descriptor2,FMT=FMT4) var2_int
+                        subcell = trim(adjustl(descriptor1))//"_"//trim(adjustl(descriptor2))//".dat"
+                        inquire(file=trim(path3)//trim(subcell),exist=flag1)
+
+                        !Write to the file the variables, coordinates, and gradients
+                        if (flag1) then
+                                open(72,file=trim(path3)//trim(subcell),position="append")
+                                write(72,FMT=FMT1,advance="no") (vals(i),i=1,Nvar)
+                                write(72,FMT=FMT2)(coords(i),i=1,6*Natoms)
+                                close(72)
+                        else
+                                open(72,file=trim(path3)//trim(subcell),position="append",status="new")
+                                write(72,FMT=FMT1,advance="no") (vals(i),i=1,Nvar)
+                                write(72,FMT=FMT2)(coords(i),i=1,6*Natoms)
+                                close(72)
+                        end if
+
+                else
+
                         !If the state is not yet fully described, continue
                         !adding coordinates; (line_num keeps track of atom #)
-                        state3 = 1
-! I suggest read_coords to be a generic subroutine to read the coord
-! then call dis, ang, dih to get whatever
-                        call read_coords(coords,Natoms,line_num,state3)
-
-                        !If there is a z coordinate equal to ******, skip it
-                        if (state3 /= 0) then
-                                read(71,FMT="(A50)") line_data
-                                Nstates = Nstates - 1
-                                flag2 = .true.
-                        end if
+                        call read_coords(coords,Natoms,line_num)
+                        line_num = line_num + 1
                 end if
-
-                !At the end of the file, quit
-                if (state2 /= 0) exit
         end do              
         close(71)
-!       if (Ntraj == 20) exit
+!       if (Ntraj == 20) exit        (if we wanted to end data collection prematurely)
 end do
 call CPU_time(t2)
 close(70)
 
-open(70,file=trim(path2)//trim(file3),position="append")
+open(70,file=trim(path4)//trim(progressfile),position="append")
+write(70,*), ""
 write(70,*) "The reading and collecting took:", t2-t1, "seconds"
 write(70,*) "The number of states is:", Nstates
 close(70)
 t1 = t2
 
 deallocate(vals,coords)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 !Now we just need to organize every folder
 !Note: probably more efficient do this inside the loop
@@ -159,37 +161,61 @@ line_data = ""
 do i = 1, floor(max_var1/spacing1)-1
 do j = 1, floor(max_var2/spacing1)-1
 
-open(70,file=trim(path2)//trim(file3),position="append")
-write(70,*) "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-write(70,*) ""
-write(70,*) "divying up   var1:", i, "var2:", j
-write(70,*) ""
-close(70)
+!open(70,file=trim(path4)//trim(progressfile),position="append")
+!write(70,*) "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+!write(70,*) ""
+!write(70,*) "divying up   var1:", i, "var2:", j
+!write(70,*) ""
+!close(70)
 
-! where is this defined? what does it do?
+!Access divyUp from the addCells module
 call divyUp(i,j,1,0,line_data)
 
 end do
 end do
 
+
+
+
+call CPU_time(t2)
+
+open(70,file=trim(path4)//trim(progressfile),position="append")
+write(70,*), ""
+write(70,*) "The divyUp took:", t2-t1, "seconds"
+close(70)
+
+
+
+
+
+
 end program getCells
 
-!This exists because some z coordinates are ******
+
+
+
+
+
 !maybe keep all distance subroutine into one mod (e.g. f1_variables.f90)
-subroutine read_coords(coords,Natoms,line_num,stat)
+subroutine read_coords(coords,Natoms,line_num)
 implicit none
 integer, intent(in) :: Natoms, line_num
-integer, intent(out) :: stat
+!integer, intent(out) :: stat
+integer :: i,j
 character(11) :: cvar
 real, dimension(6*Natoms), intent(out) :: coords
 
 ! again, call the dis funct. here
-read(71,FMT="(10x,2(1x,F10.6),(A11),1x,3(1x,F10.6)))") coords(3*line_num-2), &
-& coords(3*line_num-1),cvar,coords(3*Natoms+3*line_num-2), &
-& coords(3*Natoms+3*line_num-1),coords(3*Natoms+3*line_num)
 
-if (cvar /= " **********") then
-        read (cvar, FMT="(1x,F10.6)") coords(3*line_num)
-        stat = 0
-end if
+!come back to later !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!this only has the coordinates of one atom (and its gradients)
+!when line_num ==6 I can call the distance function, admittedly
+
+
+i = 3*line_num
+j = 3*Natoms
+read(71,FMT="(10x,3(1x,F10.6),1x,3(1x,F10.6))") coords(i-2), coords(i-1), &
+coords(i), coords(j+i-2), coords(j+i-1), coords(j+i)
+
+
 end subroutine

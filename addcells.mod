@@ -1,8 +1,9 @@
-GFORTRAN module version '0' created from addCells.f90 on Wed May 23 00:57:29 2018
-MD5:a5c8594f8d81037b385a8e9b84884334 -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '0' created from addCells.f90 on Thu May 24 01:01:11 2018
+MD5:e253a4e85b538ad864d58f3cb0fe7c1f -- If you edit this, you'll get what you deserve.
 
-(() () () () () () () () () () () () () () () ()
-() () () () () () () () () () ())
+
+(() () () () () () () () () () () () () () () () () () () () () () () ()
+() () ())
 
 ()
 
@@ -29,9 +30,9 @@ DECL UNKNOWN SUBROUTINE RECURSIVE) (UNKNOWN 0 0 0 UNKNOWN ()) 11 0 (12
 (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 15 'order' '' 'order' 11 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
 DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-16 'file0' '' 'file0' 11 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
-DUMMY) (CHARACTER 1 0 0 CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ())
-0 '50'))) 0 0 () () 0 () () () 0 0)
+16 'currentsubcell' '' 'currentsubcell' 11 ((VARIABLE IN UNKNOWN-PROC
+UNKNOWN UNKNOWN DUMMY) (CHARACTER 1 0 0 CHARACTER ((CONSTANT (INTEGER 4
+0 0 INTEGER ()) 0 '50'))) 0 0 () () 0 () () () 0 0)
 5 'var1' '' 'var1' 4 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN DUMMY) (
 REAL 4 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 6 'var2' '' 'var2' 4 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN DUMMY) (
