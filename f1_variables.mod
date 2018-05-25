@@ -1,5 +1,5 @@
-GFORTRAN module version '0' created from f1_variables.f90 on Thu May 24 01:01:05 2018
-MD5:10fe0d62718234b80783bac51a27943b -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '0' created from f1_variables.f90 on Fri May 25 06:13:50 2018
+MD5:5033b4464e1cc76861b238d0c6edbee6 -- If you edit this, you'll get what you deserve.
 
 (() ()
 () () () () () () () () () () () () () () () () () () () () () () () ()
@@ -58,7 +58,7 @@ UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (INTEGER 4 0 0 INTEGER ()) 0 0 () (
 CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '3') () 0 () () () 0 0)
 27 'overcrowd' 'f1_parameters' 'overcrowd' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (INTEGER 4 0 0 INTEGER ()) 0 0 () (
-CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '10000') () 0 () () () 0 0)
+CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '1000') () 0 () () () 0 0)
 28 'path1' 'f1_parameters' 'path1' 1 ((PARAMETER UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0 CHARACTER ((
 CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '50'))) 0 0 () (CONSTANT (
@@ -105,12 +105,17 @@ CONSTANT (REAL 4 0 0 REAL ()) 0 '0.199999a@0') () 0 () () () 0 0)
 39 'start_from_scratch' 'f1_parameters' 'start_from_scratch' 1 ((
 VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (LOGICAL 4 0
 0 LOGICAL ()) 0 0 () () 0 () () () 0 0)
-40 'temporaryfile' 'f1_parameters' 'temporaryfile' 1 ((PARAMETER
+40 'temporaryfile1' 'f1_parameters' 'temporaryfile1' 1 ((PARAMETER
 UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '20'))) 0 0 () (
-CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'tmp.txt             ') ()
+CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'tmp1.txt            ') ()
 0 () () () 0 0)
-41 'trajectories' 'f1_parameters' 'trajectories' 1 ((PARAMETER
+41 'temporaryfile2' 'f1_parameters' 'temporaryfile2' 1 ((PARAMETER
+UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0
+CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '20'))) 0 0 () (
+CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'tmp2.txt            ') ()
+0 () () () 0 0)
+42 'trajectories' 'f1_parameters' 'trajectories' 1 ((PARAMETER
 UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '20'))) 0 0 () (
 CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'f1_trajectories.txt ') ()
@@ -149,5 +154,5 @@ DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 'max_var2' 0 24 'natoms' 0 25 'nvar' 0 26 'overcrowd' 0 27 'path1' 0 28
 'path2' 0 29 'path3' 0 30 'path4' 0 31 'progressfile' 0 32 'scaling1' 0
 33 'scaling2' 0 34 'scaling3' 0 35 'spacing1' 0 36 'spacing2' 0 37
-'spacing3' 0 38 'start_from_scratch' 0 39 'temporaryfile' 0 40
-'trajectories' 0 41)
+'spacing3' 0 38 'start_from_scratch' 0 39 'temporaryfile1' 0 40
+'temporaryfile2' 0 41 'trajectories' 0 42)

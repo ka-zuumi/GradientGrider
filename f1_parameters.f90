@@ -20,7 +20,9 @@ character(20),parameter :: trajectories = "f1_trajectories.txt" !Used to be file
 !File that writes the progress of the program
 character(20),parameter :: progressfile = "f1_progress.txt" !Used to not exist
 !File to write to for system calls
-character(20),parameter :: temporaryfile = "tmp.txt"
+character(20),parameter :: temporaryfile1 = "tmp1.txt"
+character(20),parameter :: temporaryfile2 = "tmp2.txt"
+
 
 
 
@@ -51,7 +53,7 @@ real,parameter :: spacing2 = 1.0
 real,parameter :: spacing3 = 0.1
 
 !The threshold of "overcrowded" grid
-integer,parameter :: overcrowd = 10000
+integer,parameter :: overcrowd = 1000
 
 !The scaling is the amount that is resolved for an overcrowded grid
 ! (10,10,10) = x1000 magnification

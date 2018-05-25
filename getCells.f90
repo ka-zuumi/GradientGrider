@@ -8,6 +8,7 @@ integer :: Ntraj,Nstates,state1,state2,state3,line_num,skips,i,j,k
 logical :: flag1, flag2
 real :: var1,var2,var3
 integer :: var1_int, var2_int, var3_int
+integer, allocatable :: number_of_states(:,:)
 real :: t1,t2
 real,allocatable :: coords(:),vals(:)
 character(50) :: current_path,line_data
@@ -33,6 +34,8 @@ open(70,file=trim(path4)//trim(trajectories),action="read")
 !vals    ---  this array keeps var1, var2, var3 of a state
 allocate(coords(6*Natoms))
 allocate(vals(Nvar))
+
+!The way the files are formatted, every seventh line is a new state
 skips = Natoms+1
 
 !We will keep track of how many trajectories and states we encounter
@@ -42,34 +45,38 @@ Nstates = 0
 do
 
         if (.not. (start_from_scratch)) exit
+!       if (Ntraj == 20) exit       !(if we wanted to end data collection prematurely)
 
         !Fetch the name of one folder (a trajectory)
         !Format its contents with sed into tmp.txt
+        !If there are no more trajectories, iostat returns nonzero
         read(70,FMT="(A20)",iostat=state1) some_folder
         if (state1 /= 0) exit
         call system(trim(path2)//"trajectory_sed.sh "//trim(path1)//&
-                trim(some_folder)//"kkk.out "//trim(path4)//trim(temporaryfile))
+                trim(some_folder)//"kkk.out "//trim(path4)//trim(temporaryfile1))
+
+        !A successful folder opening is a successful trajectory reading
         Ntraj = Ntraj+1
 
 
 
 !To track the progress, open up 80
 open(80,file=trim(path4)//trim(progressfile),position="append")
-write(80,*) trim(path2)//"trajectory_sed.sh "//trim(path1)//&
-            trim(some_folder)//"kkk.out "//trim(path4)//trim(temporaryfile)
 write(80,*) "Now accessing folder:", some_folder
 close(80)
 
 
-        
+
         !Open the now-formatted trajectory, discard the first line
-        open(71,file=trim(path4)//trim(temporaryfile))
+        open(71,file=trim(path4)//trim(temporaryfile1))
         read(71,FMT="(A50)", iostat=state2) line_data
         line_num = 1
 
         do
                 if (line_num == skips) then
 
+                        !Get rid of this line (just characters)
+                        !If it doesn't exists, we're at the end of the file
                         read(71,FMT="(A50)", iostat=state2) line_data
                         if (state2 /= 0) exit
                         line_num = 1
@@ -90,30 +97,11 @@ close(80)
                         vals(2) = var2
                         vals(3) = var3
 
-                        !Find which appropriate cell the state is in
-                        var1_int = floor(var1/spacing1)
-                        var2_int = floor(var2/spacing2)
-                        var3_int = floor(var3/spacing3)
-
-                        !Make the filename for the cell
-                        write(descriptor1,FMT=FMT4) var1_int
-                        write(descriptor2,FMT=FMT4) var2_int
-                        subcell = trim(adjustl(descriptor1))//"_"//trim(adjustl(descriptor2))//".dat"
-                        inquire(file=trim(path3)//trim(subcell),exist=flag1)
-
                         !Write to the file the variables, coordinates, and gradients
-                        if (flag1) then
-                                open(72,file=trim(path3)//trim(subcell),position="append")
-                                write(72,FMT=FMT1,advance="no") (vals(i),i=1,Nvar)
-                                write(72,FMT=FMT2)(coords(i),i=1,6*Natoms)
-                                close(72)
-                        else
-                                open(72,file=trim(path3)//trim(subcell),position="append",status="new")
-                                write(72,FMT=FMT1,advance="no") (vals(i),i=1,Nvar)
-                                write(72,FMT=FMT2)(coords(i),i=1,6*Natoms)
-                                close(72)
-                        end if
+                        call addState(vals,coords)
 
+                        !And this is one successful state/frame
+                        Nstates = Nstates + 1
                 else
 
                         !If the state is not yet fully described, continue
@@ -123,7 +111,6 @@ close(80)
                 end if
         end do              
         close(71)
-!       if (Ntraj == 20) exit        (if we wanted to end data collection prematurely)
 end do
 call CPU_time(t2)
 close(70)
@@ -145,44 +132,6 @@ deallocate(vals,coords)
 
 
 
-
-
-
-
-
-
-
-
-
-!Now we just need to organize every folder
-!Note: probably more efficient do this inside the loop
-!maybe by using the addState subroutine instead
-line_data = ""
-do i = 1, floor(max_var1/spacing1)-1
-do j = 1, floor(max_var2/spacing1)-1
-
-!open(70,file=trim(path4)//trim(progressfile),position="append")
-!write(70,*) "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-!write(70,*) ""
-!write(70,*) "divying up   var1:", i, "var2:", j
-!write(70,*) ""
-!close(70)
-
-!Access divyUp from the addCells module
-call divyUp(i,j,1,0,line_data)
-
-end do
-end do
-
-
-
-
-call CPU_time(t2)
-
-open(70,file=trim(path4)//trim(progressfile),position="append")
-write(70,*), ""
-write(70,*) "The divyUp took:", t2-t1, "seconds"
-close(70)
 
 
 
