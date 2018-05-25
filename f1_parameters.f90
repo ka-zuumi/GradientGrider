@@ -22,7 +22,10 @@ character(20),parameter :: progressfile = "f1_progress.txt" !Used to not exist
 !File to write to for system calls
 character(20),parameter :: temporaryfile1 = "tmp1.txt"
 character(20),parameter :: temporaryfile2 = "tmp2.txt"
+<<<<<<< HEAD
 character(20),parameter :: temporaryfile3 = "tmp3.txt"
+=======
+>>>>>>> 1bdda66bc8df6031cdc17d59648bac546c2f98a8
 
 
 

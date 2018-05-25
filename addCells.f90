@@ -38,6 +38,7 @@ close(80)
 
 !!!!!!!!!!!!!!!!!!!!!!!! NEXT TWO CHECKS MAY NOT BE NECESSARY !!!!!!!!!!!!!!!
 !Checks if the file even exists; if not, exit
+<<<<<<< HEAD
 !inquire(file=trim(path3)//trim(subcell1)//".dat",exist=state1)
 !if (.not.(state1)) return
 ! 
@@ -46,6 +47,16 @@ close(80)
 !!        trim(path4)//trim(temporaryfile2))
 !inquire(file=trim(path4)//trim(temporaryfile2),size=i)
 !if (i /= 0) return
+=======
+inquire(file=trim(path3)//trim(subcell1)//".dat",exist=state1)
+if (.not.(state1)) return
+ 
+!(meaning it was already organized); if so it then stops
+call system("ls -p "//trim(path3)//trim(currentsubcell)//" | grep '"//trim(subcell1)//"/' > "//&
+        trim(path4)//trim(temporaryfile2))
+inquire(file=trim(path4)//trim(temporaryfile2),size=i)
+if (i /= 0) return
+>>>>>>> 1bdda66bc8df6031cdc17d59648bac546c2f98a8
 !!!!!!!!!!!!!!!!!!!!!!!! but really are good practice in general !!!!!!!!!!
 
 !Open up the file,read the variables, coordinates, gradients

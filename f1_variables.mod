@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 GFORTRAN module version '0' created from f1_variables.f90 on Fri May 25 21:03:07 2018
 MD5:6e17c1495f75431f7286e5822fe2a264 -- If you edit this, you'll get what you deserve.
+=======
+GFORTRAN module version '0' created from f1_variables.f90 on Fri May 25 06:13:50 2018
+MD5:5033b4464e1cc76861b238d0c6edbee6 -- If you edit this, you'll get what you deserve.
+>>>>>>> 1bdda66bc8df6031cdc17d59648bac546c2f98a8
 
 (() ()
 () () () () () () () () () () () () () () () () () () () () () () () ()
@@ -115,12 +120,16 @@ UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '20'))) 0 0 () (
 CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'tmp2.txt            ') ()
 0 () () () 0 0)
+<<<<<<< HEAD
 42 'temporaryfile3' 'f1_parameters' 'temporaryfile3' 1 ((PARAMETER
 UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '20'))) 0 0 () (
 CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'tmp3.txt            ') ()
 0 () () () 0 0)
 43 'trajectories' 'f1_parameters' 'trajectories' 1 ((PARAMETER
+=======
+42 'trajectories' 'f1_parameters' 'trajectories' 1 ((PARAMETER
+>>>>>>> 1bdda66bc8df6031cdc17d59648bac546c2f98a8
 UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (CHARACTER 1 0 0
 CHARACTER ((CONSTANT (INTEGER 4 0 0 INTEGER ()) 0 '20'))) 0 0 () (
 CONSTANT (CHARACTER 1 0 0 CHARACTER (())) 0 20 'f1_trajectories.txt ') ()
@@ -160,4 +169,8 @@ DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 'path2' 0 29 'path3' 0 30 'path4' 0 31 'progressfile' 0 32 'scaling1' 0
 33 'scaling2' 0 34 'scaling3' 0 35 'spacing1' 0 36 'spacing2' 0 37
 'spacing3' 0 38 'start_from_scratch' 0 39 'temporaryfile1' 0 40
+<<<<<<< HEAD
 'temporaryfile2' 0 41 'temporaryfile3' 0 42 'trajectories' 0 43)
+=======
+'temporaryfile2' 0 41 'trajectories' 0 42)
+>>>>>>> 1bdda66bc8df6031cdc17d59648bac546c2f98a8
