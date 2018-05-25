@@ -15,7 +15,6 @@ allocate(cells(cells_var1,cells_var2))
 !Iterate through these cells
 do i = 1, cells_var1
 do j = 1, cells_var2
-states = 0
 
 !Get the file corresponding to this cell
 write(descriptor1,FMT=FMT4) i
@@ -27,29 +26,25 @@ inquire(file=trim(path3)//trim(subcell)//".dat",exist=flag1)
 
 !If it does, figure out how many states are in it
 if (flag1) then
-open(72,file=trim(path3)//trim(subcell)//".dat")
-do
-read(72,FMT="(A20)",iostat=state1) line_data
-if (state1 /= 0) exit
-states = states + 1
-end do
+open(72,file=trim(path3)//trim(subcell)//".p")
+read(72,FMT="(I9)") states
 close(72)
 
 !Otherwise, this cell is empty
 else
+states = 0
 end if
 
 cells(i,j) = states
-print *, states
 
 end do
 end do
 
 
 
-!Then print the data onto file3
-open(72,file=trim(path4)//trim(temporaryfile))
-write(descriptor1,"(I9)") cells_var1
+!Then print the data onto temporaryfile3
+open(72,file=trim(path4)//trim(temporaryfile3))
+write(descriptor1,FMT=FMT4) cells_var1
 do j = 1, cells_var2
 write(72,FMT="("//trim(adjustl(descriptor1))//"I9)") cells(:,j)
 end do
